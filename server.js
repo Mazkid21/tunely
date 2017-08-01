@@ -86,16 +86,16 @@ app.get('/api/albums', function album_index(req, res){
 
 app.post('/api/albums', function postThat(req,res) {
     console.log("oihliuhliu");
-    console.log(req.body);
-
+    
   db.Album.create({artistName: req.body.artistName, name: req.body.album,
   releaseDate: req.body.releaseDate, genre: [req.body.genre] },
-  function(err, album) {
+  function(err, Albums) {
     if(err){
       console.log(err);
       return;
     }
-    album.save();
+    console.log(Albums);
+    Albums.save();
     res.json(req.body);
   
   });

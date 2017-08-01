@@ -60,7 +60,31 @@ function addAlbum() {
     var formData = $(this).serialize();
       console.log(formData);
       $(this).trigger("reset");
-  });
+  
+
+var inputData = {
+  name:$("#name").val(),
+  artistName: $("#textinput").val(),
+  releaseDate: $("#releaseDate").val(),
+  genres: $("#genres").val()
+};
+
+console.log(formData);
+
+$.ajax({
+  url:"http://localhost:3000/api/albums",
+  dataType: "json",
+  method: "POST",
+  data: JSON.stringify(inputData),
+  success: function(data){
+      console.log(inputData);
+      }
+  }
+
+);
+});
+
+
 }
 
 
