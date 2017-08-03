@@ -58,6 +58,7 @@ app.use(express.static(__dirname + '/public'));
  * HTML Endpoints
  */
 
+
 app.get('/', function homepage (req, res) {
   res.sendFile(__dirname + '/views/index.html');
 });
@@ -79,26 +80,61 @@ app.get('/api', function api_index (req, res){
 });
 
 app.get('/api/albums', function album_index(req, res){
-  db.Album.find({}, function(err, Albums){
-    res.json(Albums);
+  db.Album.find()
+  .exec(function(err, albums){
+    res.json(albums);
   });
 });
 
 app.post('/api/albums', function postThat(req,res) {
-    console.log("oihliuhliu");
-    
-  db.Album.create({artistName: req.body.artistName, name: req.body.album,
-  releaseDate: req.body.releaseDate, genre: [req.body.genre] },
-  function(err, Albums) {
-    if(err){
-      console.log(err);
-      return;
-    }
-    console.log(Albums);
-    Albums.save();
+    var newArtistName = req.body.artistName;
+    var newName = req.body.name;
+    var newReleaseDate = req.body.releaseDate;
+    var genres = [req.body.genres];
+    db.Album.create({
+      artistName: newArtistName,
+      name: newName,
+      releaseDate: newReleaseDate,
+      genres: genres } , function (error, album) {
+        if(error) {
+          return console.log(error);
+        }
+        album.save();
+      });
     res.json(req.body);
-  
-  });
+});
+
+//posting new song
+app.post('/api/albums/:album_id/songs',function postThat(req,res){
+  console.log(" new song HIT");
+  console.log(req.body);
+  var id=req.params.album_id;
+  console.log(id);
+
+  db.Album.findById({'_id': id},function(err, foundAlbum){
+    if(err){ return console.log(err);}
+
+    foundAlbum.songs.push(
+      {name: req.body.name,
+      trackNumber: req.body.trackNumber});
+
+    foundAlbum.save(function(err){
+      
+      res.json(foundAlbum);
+
+      });   
+   });
+});
+
+//get the new updated album
+app.get('/api/albums/:id',function updateAlbum(req,res){
+  var id= req.params.id;
+  console.log("hit the get route to update");
+  db.Album.findById({'_id': id}, function(err,album) {
+      console.log('finding that album by Id');
+     if(err){console.log(err);}
+     res.json(album);
+    });
 });
 
 /**********
